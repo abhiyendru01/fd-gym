@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
+import AdminLogin from "./pages/AdminLogin";
 import BMI from "./pages/BMI";
 import Workouts from "./pages/Workouts";
 import PartnerGyms from "./pages/PartnerGyms";
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/bmi" element={<BMI />} />
             <Route path="/workouts" element={<Workouts />} />
             <Route path="/partner-gyms" element={<PartnerGyms />} />
