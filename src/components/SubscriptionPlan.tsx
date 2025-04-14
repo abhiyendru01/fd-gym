@@ -6,6 +6,22 @@ import { cn } from '@/lib/utils';
 import { useUser } from '@clerk/clerk-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { useNavigate } from 'react-router-dom';
+
+// Load Razorpay script
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => {
+      resolve(true);
+    };
+    script.onerror = () => {
+      resolve(false);
+    };
+    document.body.appendChild(script);
+  });
+};
 
 interface SubscriptionPlanProps {
   name: string;
@@ -19,6 +35,62 @@ const SubscriptionPlan = ({ name, price, duration, features, popular = false }: 
   const { user, isSignedIn } = useUser();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const handlePayment = async (order_id: string, key_id: string, amount: number) => {
+    const options = {
+      key: key_id,
+      amount: amount,
+      currency: "INR",
+      name: "FD GYM",
+      description: `${name} Plan Subscription`,
+      order_id: order_id,
+      handler: async function (response: any) {
+        setIsLoading(true);
+        try {
+          // Verify payment with our backend
+          const { data, error } = await supabase.functions.invoke('verify-payment', {
+            body: {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            },
+          });
+
+          if (error) throw error;
+
+          toast({
+            title: "Payment Successful!",
+            description: `You are now subscribed to the ${name} plan.`,
+          });
+
+          // Redirect to profile page after successful payment
+          setTimeout(() => {
+            navigate('/profile');
+          }, 2000);
+        } catch (error) {
+          console.error('Payment verification error:', error);
+          toast({
+            title: "Payment Verification Failed",
+            description: error.message || "There was an error verifying your payment.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      },
+      prefill: {
+        name: user?.fullName || "",
+        email: user?.primaryEmailAddress?.emailAddress || "",
+      },
+      theme: {
+        color: "#E11D48",
+      },
+    };
+
+    const paymentObject = new (window as any).Razorpay(options);
+    paymentObject.open();
+  };
 
   const handleSubscribe = async () => {
     if (!isSignedIn || !user) {
@@ -27,11 +99,18 @@ const SubscriptionPlan = ({ name, price, duration, features, popular = false }: 
         description: "Please log in to subscribe to a plan",
         variant: "destructive",
       });
+      navigate('/login');
       return;
     }
 
     setIsLoading(true);
     try {
+      // Ensure Razorpay script is loaded
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        throw new Error("Failed to load Razorpay checkout script");
+      }
+
       // Call the subscription edge function
       const { data, error } = await supabase.functions.invoke('create-subscription', {
         body: {
@@ -44,15 +123,12 @@ const SubscriptionPlan = ({ name, price, duration, features, popular = false }: 
 
       if (error) throw error;
 
-      toast({
-        title: "Subscription Successful!",
-        description: `You are now subscribed to the ${name} plan.`,
-      });
-
-      // Refresh the page to show updated subscription status
-      setTimeout(() => {
-        window.location.href = '/profile';
-      }, 2000);
+      // Initialize Razorpay payment
+      handlePayment(
+        data.razorpay.order_id,
+        data.razorpay.key_id,
+        data.razorpay.amount
+      );
 
     } catch (error) {
       console.error('Subscription error:', error);
@@ -61,7 +137,6 @@ const SubscriptionPlan = ({ name, price, duration, features, popular = false }: 
         description: error.message || "There was an error processing your subscription.",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };

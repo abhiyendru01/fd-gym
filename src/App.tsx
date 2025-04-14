@@ -15,6 +15,7 @@ import AdminLogin from "./pages/AdminLogin";
 import BMI from "./pages/BMI";
 import Workouts from "./pages/Workouts";
 import PartnerGyms from "./pages/PartnerGyms";
+import Subscriptions from "./pages/Subscriptions";
 
 // Clerk publishable key
 const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "pk_test_YWxlcnQtZG9nLTI0LmNsZXJrLmFjY291bnRzLmRldiQ";
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/bmi" element={<BMI />} />
             <Route path="/workouts" element={<Workouts />} />
             <Route path="/partner-gyms" element={<PartnerGyms />} />
+            <Route path="/subscriptions" element={<Subscriptions />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

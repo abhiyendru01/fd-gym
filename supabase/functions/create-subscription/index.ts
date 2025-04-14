@@ -32,6 +32,39 @@ function calculateEndDate(duration: string): Date {
   return now;
 }
 
+// Razorpay order creation function
+async function createRazorpayOrder(amount: number, receipt: string) {
+  const razorpayKey = Deno.env.get("RAZORPAY_KEY_ID");
+  const razorpaySecret = Deno.env.get("RAZORPAY_KEY_SECRET");
+  
+  if (!razorpayKey || !razorpaySecret) {
+    throw new Error("Razorpay API keys are not configured");
+  }
+  
+  const auth = btoa(`${razorpayKey}:${razorpaySecret}`);
+  
+  const response = await fetch("https://api.razorpay.com/v1/orders", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Basic ${auth}`
+    },
+    body: JSON.stringify({
+      amount: amount * 100, // Razorpay expects amount in paise (1 INR = 100 paise)
+      currency: "INR",
+      receipt: receipt,
+      payment_capture: 1
+    })
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(`Razorpay API error: ${JSON.stringify(errorData)}`);
+  }
+  
+  return await response.json();
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -65,10 +98,14 @@ serve(async (req) => {
       }
     );
     
+    // Create Razorpay order
+    const receipt = `sub_${user_id.substring(0, 8)}_${Date.now()}`;
+    const razorpayOrder = await createRazorpayOrder(amount, receipt);
+    
     // Calculate subscription end date
     const end_date = calculateEndDate(duration);
     
-    // Create a new subscription in the database
+    // Create a pending subscription in the database
     const { data, error } = await supabaseAdmin
       .from("subscriptions")
       .insert({
@@ -76,6 +113,8 @@ serve(async (req) => {
         plan_name,
         amount,
         duration,
+        status: "pending", // Mark as pending until payment completes
+        razorpay_order_id: razorpayOrder.id,
         end_date: end_date.toISOString(),
       })
       .select()
@@ -83,11 +122,17 @@ serve(async (req) => {
     
     if (error) throw error;
     
-    // Return the created subscription
+    // Return the created subscription along with Razorpay order details
     return new Response(
       JSON.stringify({ 
         success: true, 
-        subscription: data 
+        subscription: data,
+        razorpay: {
+          order_id: razorpayOrder.id,
+          key_id: Deno.env.get("RAZORPAY_KEY_ID"),
+          amount: razorpayOrder.amount,
+          currency: razorpayOrder.currency
+        }
       }),
       {
         status: 200,
