@@ -27,23 +27,26 @@ const Navbar = () => {
 
   return (
     <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-black/90 backdrop-blur-md shadow-lg' : 'bg-transparent'
+      isScrolled ? 'bg-black/80 backdrop-blur-md shadow-lg' : 'bg-transparent backdrop-blur-sm'
     }`}>
       <div className="container mx-auto px-4 md:px-6">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <Dumbbell className="h-8 w-8 text-fdgym-red" />
-            <span className="font-orbitron text-xl font-bold text-white">FD <span className="text-fdgym-red">GYM</span></span>
+          <Link to="/" className="flex items-center space-x-2 absolute left-4">
+            <Dumbbell className="h-6 w-6 text-fdgym-red" />
+            <span className="font-orbitron text-lg font-bold text-white">FD <span className="text-fdgym-red">GYM</span></span>
           </Link>
           
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden md:flex items-center space-x-8">
             <Link to="/" className="text-fdgym-light-gray hover:text-fdgym-neon-red transition-colors">Home</Link>
             <Link to="/workouts" className="text-fdgym-light-gray hover:text-fdgym-neon-red transition-colors">Workouts</Link>
             <Link to="/bmi" className="text-fdgym-light-gray hover:text-fdgym-neon-red transition-colors">BMI Calculator</Link>
             <Link to="/partner-gyms" className="text-fdgym-light-gray hover:text-fdgym-neon-red transition-colors">Partner Gyms</Link>
-            
+          </nav>
+          
+          {/* Login Buttons - Desktop */}
+          <div className="hidden md:block absolute right-4">
             {user ? (
               <div className="flex items-center space-x-4">
                 <Link to="/profile">
@@ -73,11 +76,11 @@ const Navbar = () => {
                 </Link>
               </div>
             )}
-          </nav>
+          </div>
           
           {/* Mobile Menu Button */}
           <button 
-            className="md:hidden text-white focus:outline-none"
+            className="md:hidden absolute right-4 text-white focus:outline-none"
             onClick={toggleMenu}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -87,7 +90,7 @@ const Navbar = () => {
       
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-fdgym-dark-gray/95 backdrop-blur-lg">
+        <div className="md:hidden bg-fdgym-dark-gray/95 backdrop-blur-lg rounded-b-xl">
           <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
             <Link 
               to="/" 

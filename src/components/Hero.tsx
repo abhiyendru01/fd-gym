@@ -23,11 +23,11 @@ const Hero = () => {
       <div 
         className="absolute inset-0 bg-gradient-gym"
         style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1517963879433-6ad2b056d712?auto=format&fit=crop&q=80&w=1920')",
+          backgroundImage: "url('https://images.unsplash.com/photo-1547919307-1ecb10702e6f?auto=format&fit=crop&q=80&w=1920&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          filter: 'brightness(0.3)',
+          filter: 'brightness(0.2)',
           transform: `translateY(${scrollY * 0.3}px)`,
         }}
       />
@@ -40,24 +40,37 @@ const Hero = () => {
       
       {/* Content */}
       <div className="container mx-auto px-4 pt-20 pb-24 relative z-10">
-        <div className="flex flex-col lg:flex-row lg:items-center">
-          <div className="lg:w-1/2 space-y-6 animate-fade-in">
+        <div className="flex flex-col items-center">
+          {/* Centered Bodybuilder Image */}
+          <div className="relative mb-8 w-full max-w-md mx-auto">
+            <div className="aspect-square rounded-full bg-fdgym-red/20 blur-3xl absolute inset-0" />
+            <img 
+              src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+              alt="Bodybuilder"
+              className="rounded-2xl shadow-2xl relative z-10 animate-float object-cover mx-auto"
+              style={{ maxHeight: "400px", objectPosition: "center top" }}
+            />
+            {/* Neon border effect */}
+            <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-fdgym-red to-fdgym-neon-red opacity-70 blur-sm animate-pulse-glow -z-10" />
+          </div>
+
+          <div className="w-full max-w-3xl space-y-6 text-center animate-fade-in">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-orbitron font-black text-white leading-tight">
               TRANSFORM YOUR <span className="text-fdgym-neon-red">BODY</span>
               <br />
               ELEVATE YOUR <span className="text-fdgym-neon-red">LIFE</span>
             </h1>
             
-            <p className="text-lg md:text-xl text-fdgym-light-gray max-w-2xl">
+            <p className="text-lg md:text-xl text-fdgym-light-gray max-w-2xl mx-auto">
               FD GYM offers premium fitness experiences with cutting-edge equipment, expert trainers, and personalized programs to help you achieve your fitness goals.
             </p>
             
-            <div className="flex flex-wrap gap-4 pt-4">
+            <div className="flex flex-wrap justify-center gap-4 pt-4">
               <LoginButton variant="admin" />
               <LoginButton variant="user" />
             </div>
             
-            <div className="flex flex-wrap gap-6 pt-6">
+            <div className="flex flex-wrap justify-center gap-6 pt-6">
               <div className="flex items-center space-x-2">
                 <Dumbbell className="h-6 w-6 text-fdgym-red" />
                 <span className="text-white">Premium Equipment</span>
@@ -70,19 +83,6 @@ const Hero = () => {
                 <Trophy className="h-6 w-6 text-fdgym-red" />
                 <span className="text-white">Expert Trainers</span>
               </div>
-            </div>
-          </div>
-          
-          <div className="lg:w-1/2 mt-12 lg:mt-0 flex justify-center items-center">
-            <div className="relative w-full max-w-md">
-              <div className="aspect-square rounded-full bg-fdgym-red/20 blur-3xl absolute inset-0" />
-              <img 
-                src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=800"
-                alt="Fitness trainer"
-                className="rounded-2xl shadow-2xl relative z-10 animate-float object-cover"
-              />
-              {/* Neon border effect */}
-              <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-fdgym-red to-fdgym-neon-red opacity-70 blur-sm animate-pulse-glow -z-10" />
             </div>
           </div>
         </div>
