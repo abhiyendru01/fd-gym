@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Search, Filter, Barbell, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Filter, Dumbbell, ChevronDown, ChevronUp } from 'lucide-react';
 import MainLayout from '@/layouts/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -269,7 +269,7 @@ const Workouts = () => {
                 
                 {filteredWorkouts.length === 0 && (
                   <div className="text-center py-12">
-                    <Barbell className="h-12 w-12 text-fdgym-red mx-auto mb-4" />
+                    <Dumbbell className="h-12 w-12 text-fdgym-red mx-auto mb-4" />
                     <h3 className="text-xl font-medium mb-2">No workouts found</h3>
                     <p className="text-fdgym-light-gray">
                       Try adjusting your filters or search criteria
