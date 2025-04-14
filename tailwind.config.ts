@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,20 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// FD GYM custom colors
+				fdgym: {
+					black: '#000000',
+					red: '#C00000',
+					'neon-red': '#FF3131',
+					'dark-gray': '#2A2A2A',
+					white: '#FFFFFF',
+					'light-gray': '#B0B0B0',
+				},
+			},
+			fontFamily: {
+				rajdhani: ['Rajdhani', 'sans-serif'],
+				orbitron: ['Orbitron', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -70,25 +84,50 @@ export default {
 			},
 			keyframes: {
 				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
+					from: { height: '0' },
+					to: { height: 'var(--radix-accordion-content-height)' }
 				},
 				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
+					from: { height: 'var(--radix-accordion-content-height)' },
+					to: { height: '0' }
+				},
+				'pulse-glow': {
+					'0%, 100%': { 
+						boxShadow: '0 0 5px #FF3131, 0 0 10px #FF3131, 0 0 15px #FF3131'
 					},
-					to: {
-						height: '0'
+					'50%': { 
+						boxShadow: '0 0 10px #FF3131, 0 0 20px #FF3131, 0 0 30px #FF3131'
+					},
+				},
+				'fade-in': {
+					'0%': { opacity: '0', transform: 'translateY(10px)' },
+					'100%': { opacity: '1', transform: 'translateY(0)' }
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-10px)' }
+				},
+				'glow': {
+					'0%, 100%': { 
+						textShadow: '0 0 5px #FF3131, 0 0 10px #FF3131'
+					},
+					'50%': { 
+						textShadow: '0 0 10px #FF3131, 0 0 20px #FF3131'
 					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-glow': 'pulse-glow 2s infinite',
+				'fade-in': 'fade-in 0.6s ease-out',
+				'float': 'float 3s ease-in-out infinite',
+				'glow': 'glow 2s ease-in-out infinite'
+			},
+			backgroundImage: {
+				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+				'gradient-gym': 'linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(192,0,0,0.7))',
+				'gradient-card': 'linear-gradient(135deg, #2A2A2A 0%, #111111 100%)',
 			}
 		}
 	},
