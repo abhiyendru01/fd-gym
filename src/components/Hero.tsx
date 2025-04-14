@@ -45,13 +45,16 @@ const Hero = () => {
           <div className="relative mb-8 w-full max-w-md mx-auto">
             <div className="aspect-square rounded-full bg-fdgym-red/20 blur-3xl absolute inset-0" />
             <img 
-              src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+              src="https://images.unsplash.com/photo-1638953124264-de0f5842cb13?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Bodybuilder"
               className="rounded-2xl shadow-2xl relative z-10 animate-float object-cover mx-auto"
               style={{ maxHeight: "400px", objectPosition: "center top" }}
             />
-            {/* Neon border effect */}
+            {/* Enhanced Neon border effect */}
             <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-fdgym-red to-fdgym-neon-red opacity-70 blur-sm animate-pulse-glow -z-10" />
+            
+            {/* Add additional visual effects */}
+            <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-3/4 h-10 bg-fdgym-neon-red/30 blur-xl"></div>
           </div>
 
           <div className="w-full max-w-3xl space-y-6 text-center animate-fade-in">

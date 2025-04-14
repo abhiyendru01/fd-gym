@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useUser, UserProfile } from '@clerk/clerk-react';
 import { CalendarClock, CreditCard, Package, Edit, Upload, Check } from 'lucide-react';
@@ -10,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import UserSubscriptions from '@/components/UserSubscriptions';
 
 // Mock subscription data
 const mockSubscription = {
@@ -225,94 +225,7 @@ const Profile = () => {
                 </TabsContent>
                 
                 <TabsContent value="subscription" className="mt-6">
-                  <Card className="glassmorphism border-fdgym-dark-gray">
-                    <CardHeader>
-                      <CardTitle className="text-xl font-orbitron">Current Subscription</CardTitle>
-                      <CardDescription className="text-fdgym-light-gray">
-                        Manage your subscription plan and billing details
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex flex-col lg:flex-row gap-6">
-                        <div className="lg:w-1/2">
-                          <div className="glassmorphism border-fdgym-red rounded-xl p-6">
-                            <div className="flex justify-between items-center mb-4">
-                              <h3 className="font-orbitron text-lg font-bold">{mockSubscription.plan}</h3>
-                              <div className="bg-green-500/20 text-green-500 text-xs font-medium px-2 py-1 rounded-full">
-                                Active
-                              </div>
-                            </div>
-                            
-                            <div className="text-3xl font-bold mb-4">
-                              {mockSubscription.price}
-                            </div>
-                            
-                            <div className="space-y-3 mb-6">
-                              {mockSubscription.features.map((feature, index) => (
-                                <div key={index} className="flex items-start">
-                                  <Check className="h-5 w-5 text-fdgym-red mr-2 shrink-0 mt-0.5" />
-                                  <span className="text-fdgym-light-gray text-sm">{feature}</span>
-                                </div>
-                              ))}
-                            </div>
-                            
-                            <div className="flex flex-col sm:flex-row gap-3 mt-auto">
-                              <Button className="bg-fdgym-red hover:bg-fdgym-neon-red text-white flex-1">
-                                Renew Plan
-                              </Button>
-                              <Button variant="outline" className="border-fdgym-red text-fdgym-red hover:bg-fdgym-red hover:text-white flex-1">
-                                Change Plan
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="lg:w-1/2 space-y-6">
-                          <div className="space-y-4">
-                            <div className="flex items-center space-x-4">
-                              <CalendarClock className="h-10 w-10 text-fdgym-red" />
-                              <div>
-                                <h4 className="font-medium">Subscription Period</h4>
-                                <p className="text-fdgym-light-gray text-sm">
-                                  {new Date(mockSubscription.startDate).toLocaleDateString()} - {new Date(mockSubscription.endDate).toLocaleDateString()}
-                                </p>
-                              </div>
-                            </div>
-                            
-                            <div className="flex items-center space-x-4">
-                              <CreditCard className="h-10 w-10 text-fdgym-red" />
-                              <div>
-                                <h4 className="font-medium">Payment Method</h4>
-                                <p className="text-fdgym-light-gray text-sm">
-                                  Visa ending in 4242
-                                </p>
-                              </div>
-                            </div>
-                            
-                            <div className="flex items-center space-x-4">
-                              <Package className="h-10 w-10 text-fdgym-red" />
-                              <div>
-                                <h4 className="font-medium">Billing Cycle</h4>
-                                <p className="text-fdgym-light-gray text-sm">
-                                  One-time payment
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="border border-fdgym-dark-gray rounded-lg p-4">
-                            <h4 className="font-medium mb-2">Subscription Benefits</h4>
-                            <p className="text-fdgym-light-gray text-sm mb-4">
-                              Your premium subscription unlocks all FD GYM benefits and partner gym access across the country.
-                            </p>
-                            <Button variant="link" className="text-fdgym-red hover:text-fdgym-neon-red p-0">
-                              View All Benefits
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <UserSubscriptions />
                   
                   <Card className="glassmorphism border-fdgym-dark-gray mt-6">
                     <CardHeader>
