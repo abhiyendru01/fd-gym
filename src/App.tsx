@@ -17,7 +17,7 @@ import Workouts from "./pages/Workouts";
 import PartnerGyms from "./pages/PartnerGyms";
 
 // Clerk publishable key
-const CLERK_PUBLISHABLE_KEY = "pk_test_YWxlcnQtZG9nLTI0LmNsZXJrLmFjY291bnRzLmRldiQ";
+const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "pk_test_YWxlcnQtZG9nLTI0LmNsZXJrLmFjY291bnRzLmRldiQ";
 
 if (!CLERK_PUBLISHABLE_KEY) {
   throw new Error("Missing Clerk Publishable Key");
