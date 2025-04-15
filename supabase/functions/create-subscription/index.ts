@@ -82,9 +82,16 @@ serve(async (req) => {
       }),
     });
     
+    if (!orderResponse.ok) {
+      const errorText = await orderResponse.text();
+      console.error('Razorpay order creation failed:', errorText);
+      throw new Error(`Failed to create Razorpay order: ${errorText}`);
+    }
+    
     const order = await orderResponse.json();
     
     if (!order || !order.id) {
+      console.error('Invalid Razorpay order response:', order);
       throw new Error("Failed to create Razorpay order: " + JSON.stringify(order));
     }
     
@@ -104,7 +111,10 @@ serve(async (req) => {
       .select()
       .single();
     
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase insert error:', error);
+      throw error;
+    }
     
     return new Response(
       JSON.stringify({
@@ -137,3 +147,4 @@ serve(async (req) => {
     );
   }
 });
+

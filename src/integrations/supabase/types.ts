@@ -193,6 +193,8 @@ export type Database = {
           end_date: string
           id: string
           plan_name: string
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
           start_date: string
           status: string
           updated_at: string
@@ -205,6 +207,8 @@ export type Database = {
           end_date: string
           id?: string
           plan_name: string
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
           start_date?: string
           status?: string
           updated_at?: string
@@ -217,6 +221,8 @@ export type Database = {
           end_date?: string
           id?: string
           plan_name?: string
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
           start_date?: string
           status?: string
           updated_at?: string
