@@ -74,7 +74,7 @@ serve(async (req) => {
       body: JSON.stringify({
         amount: amount * 100, // Razorpay amount is in paise (1/100 of INR)
         currency: "INR",
-        receipt: `fd-gym-${user_id.slice(0, 8)}`,
+        receipt: `fd-gym-${user_id.substring(0, 8)}`,
         notes: {
           plan_name,
           user_id,
@@ -99,7 +99,7 @@ serve(async (req) => {
     const { data, error } = await supabaseAdmin
       .from("subscriptions")
       .insert({
-        user_id,
+        user_id, // Now this will work with Clerk's text-based user IDs
         plan_name,
         amount,
         duration,
@@ -147,4 +147,3 @@ serve(async (req) => {
     );
   }
 });
-
