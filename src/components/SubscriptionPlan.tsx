@@ -88,6 +88,7 @@ const SubscriptionPlan = ({ name, price, duration, features, popular = false }: 
       },
     };
 
+    // Initialize Razorpay
     const paymentObject = new (window as any).Razorpay(options);
     paymentObject.open();
   };
@@ -111,6 +112,8 @@ const SubscriptionPlan = ({ name, price, duration, features, popular = false }: 
         throw new Error("Failed to load Razorpay checkout script");
       }
 
+      console.log("Creating subscription for user:", user.id);
+      
       // Call the subscription edge function
       const { data, error } = await supabase.functions.invoke('create-subscription', {
         body: {
@@ -121,7 +124,17 @@ const SubscriptionPlan = ({ name, price, duration, features, popular = false }: 
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Subscription error:", error);
+        throw error;
+      }
+
+      if (!data || !data.razorpay) {
+        console.error("Invalid response from create-subscription:", data);
+        throw new Error("Invalid response from server");
+      }
+
+      console.log("Subscription created successfully:", data);
 
       // Initialize Razorpay payment
       handlePayment(
@@ -137,6 +150,7 @@ const SubscriptionPlan = ({ name, price, duration, features, popular = false }: 
         description: error.message || "There was an error processing your subscription.",
         variant: "destructive",
       });
+    } finally {
       setIsLoading(false);
     }
   };

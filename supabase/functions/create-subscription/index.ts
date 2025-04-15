@@ -1,7 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
-import { Razorpay } from "https://esm.sh/razorpay@2.9.2";
 
 // CORS headers for browser requests
 const corsHeaders = {
@@ -42,12 +41,6 @@ serve(async (req) => {
       }
     );
     
-    // Initialize Razorpay
-    const razorpay = new Razorpay({
-      key_id: 'rzp_test_kXdvIUTOdIictY', // Using test key
-      key_secret: 'uBUhU4SyokQFhotGToLXRg6C', // Using test secret
-    });
-    
     // Calculate duration in days for end date
     let durationDays = 30; // default to 30 days for "month"
     if (duration === "3 months") {
@@ -63,19 +56,36 @@ serve(async (req) => {
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + durationDays);
     
-    // Create Razorpay order
-    const order = await razorpay.orders.create({
-      amount: amount * 100, // Razorpay amount is in paise (1/100 of INR)
-      currency: "INR",
-      receipt: `fd-gym-${user_id.slice(0, 8)}`,
-      notes: {
-        plan_name,
-        user_id,
+    // Initialize Razorpay directly with fetch API instead of the SDK
+    const razorpayUrl = "https://api.razorpay.com/v1/orders";
+    const razorpay_key_id = 'rzp_test_kXdvIUTOdIictY';
+    const razorpay_key_secret = 'uBUhU4SyokQFhotGToLXRg6C';
+    
+    // Create authorization header with API keys
+    const authHeader = 'Basic ' + btoa(`${razorpay_key_id}:${razorpay_key_secret}`);
+    
+    // Create Razorpay order using fetch
+    const orderResponse = await fetch(razorpayUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': authHeader,
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        amount: amount * 100, // Razorpay amount is in paise (1/100 of INR)
+        currency: "INR",
+        receipt: `fd-gym-${user_id.slice(0, 8)}`,
+        notes: {
+          plan_name,
+          user_id,
+        },
+      }),
     });
     
+    const order = await orderResponse.json();
+    
     if (!order || !order.id) {
-      throw new Error("Failed to create Razorpay order");
+      throw new Error("Failed to create Razorpay order: " + JSON.stringify(order));
     }
     
     // Create subscription record in Supabase
@@ -102,7 +112,7 @@ serve(async (req) => {
         subscription: data,
         razorpay: {
           order_id: order.id,
-          key_id: 'rzp_test_kXdvIUTOdIictY',
+          key_id: razorpay_key_id,
           amount: amount * 100,
         },
       }),
