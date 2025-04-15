@@ -1,7 +1,8 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
-import { createHmac } from "https://deno.land/std@0.168.0/crypto/mod.ts";
+import * as crypto from "https://deno.land/std@0.168.0/crypto/mod.ts";
+import { encodeToString } from "https://deno.land/std@0.168.0/encoding/hex.ts";
 
 // CORS headers for browser requests
 const corsHeaders = {
@@ -14,10 +15,14 @@ function verifyRazorpaySignature(orderId: string, paymentId: string, signature: 
   const razorpaySecret = 'uBUhU4SyokQFhotGToLXRg6C'; // Using test secret
   
   const payload = orderId + "|" + paymentId;
-  const hmac = createHmac("sha256", razorpaySecret);
-  const digest = hmac.update(payload).digest("hex");
   
-  return digest === signature;
+  // Create HMAC using the correct approach for Deno
+  const key = new TextEncoder().encode(razorpaySecret);
+  const message = new TextEncoder().encode(payload);
+  const hmacDigest = crypto.subtle.digestSync("HMAC-SHA256", key, message);
+  const hmacHex = encodeToString(new Uint8Array(hmacDigest));
+  
+  return hmacHex === signature;
 }
 
 serve(async (req) => {
