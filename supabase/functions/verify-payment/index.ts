@@ -11,11 +11,7 @@ const corsHeaders = {
 
 // Helper function to verify Razorpay signature
 function verifyRazorpaySignature(orderId: string, paymentId: string, signature: string): boolean {
-  const razorpaySecret = Deno.env.get("RAZORPAY_KEY_SECRET");
-  
-  if (!razorpaySecret) {
-    throw new Error("Razorpay secret key is not configured");
-  }
+  const razorpaySecret = 'uBUhU4SyokQFhotGToLXRg6C'; // Using test secret
   
   const payload = orderId + "|" + paymentId;
   const hmac = createHmac("sha256", razorpaySecret);

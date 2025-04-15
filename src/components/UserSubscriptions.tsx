@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, Loader2, CalendarDays, Clock } from 'lucide-react';
+import { Check, Loader2, CalendarDays, Clock, CreditCard, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -85,20 +85,52 @@ const UserSubscriptions = () => {
         <CardHeader className="bg-gradient-to-r from-fdgym-dark-gray to-fdgym-black">
           <CardTitle className="text-xl font-orbitron">Your Subscriptions</CardTitle>
           <CardDescription className="text-fdgym-light-gray">
-            You don't have any active subscriptions yet
+            Upgrade to a premium plan for exclusive benefits
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="text-center">
-            <p className="text-fdgym-light-gray mb-6">
-              Get access to premium features by subscribing to one of our plans.
-            </p>
-            <Button 
-              className="bg-fdgym-red hover:bg-fdgym-neon-red text-white"
-              onClick={() => navigate('/subscriptions')}
-            >
-              View Subscription Plans
-            </Button>
+          <div className="space-y-6">
+            <div className="p-6 bg-gradient-to-br from-fdgym-dark-gray/50 to-black/30 rounded-xl border border-fdgym-dark-gray">
+              <div className="flex flex-col items-center text-center">
+                <CreditCard className="h-16 w-16 text-fdgym-red mb-4" />
+                <h3 className="text-xl font-orbitron font-bold mb-2">Enhance Your Fitness Journey</h3>
+                <p className="text-fdgym-light-gray mb-6">
+                  Unlock premium features including personalized workout plans, nutrition guidance, 
+                  and exclusive content with a FD GYM subscription.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md">
+                  <div className="flex items-start">
+                    <Check className="h-5 w-5 text-fdgym-red mr-2 mt-0.5" />
+                    <span>Personal trainer sessions</span>
+                  </div>
+                  <div className="flex items-start">
+                    <Check className="h-5 w-5 text-fdgym-red mr-2 mt-0.5" />
+                    <span>Custom workout plans</span>
+                  </div>
+                  <div className="flex items-start">
+                    <Check className="h-5 w-5 text-fdgym-red mr-2 mt-0.5" />
+                    <span>Nutrition guidance</span>
+                  </div>
+                  <div className="flex items-start">
+                    <Check className="h-5 w-5 text-fdgym-red mr-2 mt-0.5" />
+                    <span>Advanced progress tracking</span>
+                  </div>
+                </div>
+                <Button 
+                  className="mt-8 bg-gradient-to-r from-fdgym-red to-fdgym-neon-red text-white font-medium hover:from-fdgym-neon-red hover:to-fdgym-red px-8 py-6"
+                  onClick={() => navigate('/subscriptions')}
+                >
+                  View Premium Plans
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+            
+            <div className="text-center text-fdgym-light-gray text-sm">
+              <p>
+                Currently on the free plan. You can still access workouts and basic features.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>

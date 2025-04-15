@@ -120,28 +120,8 @@ const Profile = () => {
     );
   }
 
-  if (!isCheckingSubscription && !hasSubscription) {
-    return (
-      <MainLayout>
-        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center">
-          <div className="glassmorphism rounded-xl p-8 max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl font-orbitron font-bold mb-4">Subscription Required</h2>
-            <p className="text-fdgym-light-gray mb-6">
-              You need an active subscription to access your profile and use our premium features.
-              Choose a subscription plan to continue.
-            </p>
-            <Button 
-              className="bg-fdgym-red hover:bg-fdgym-neon-red text-white"
-              onClick={() => navigate('/subscriptions')}
-            >
-              View Subscription Plans
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </MainLayout>
-    );
-  }
+  // We're removing the subscription check block that prevented access
+  // Now users can access their profile without a subscription
 
   return (
     <MainLayout>
@@ -183,8 +163,17 @@ const Profile = () => {
                   <div>
                     <p className="text-fdgym-light-gray text-sm">Subscription Status</p>
                     <div className="flex items-center">
-                      <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                      <span className="text-green-500 font-medium">Active</span>
+                      {hasSubscription ? (
+                        <>
+                          <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+                          <span className="text-green-500 font-medium">Active</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="inline-block w-2 h-2 rounded-full bg-yellow-500 mr-2"></span>
+                          <span className="text-yellow-500 font-medium">Free Access</span>
+                        </>
+                      )}
                     </div>
                   </div>
                   
@@ -205,6 +194,18 @@ const Profile = () => {
                       Calculate BMI
                     </Button>
                   </div>
+                  
+                  {!hasSubscription && (
+                    <div className="mt-4">
+                      <Button 
+                        className="w-full bg-gradient-to-r from-fdgym-red to-fdgym-neon-red hover:from-fdgym-neon-red hover:to-fdgym-red text-white font-medium"
+                        onClick={() => navigate('/subscriptions')}
+                      >
+                        Upgrade to Premium
+                      </Button>
+                      <p className="text-xs text-fdgym-light-gray mt-2">Get exclusive benefits with a premium subscription</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -415,18 +416,24 @@ const Profile = () => {
                           <div className="col-span-3">Amount</div>
                           <div className="col-span-2">Status</div>
                         </div>
-                        <div className="divide-y divide-fdgym-dark-gray">
-                          <div className="py-3 px-4 text-sm grid grid-cols-12 gap-4">
-                            <div className="col-span-3">Just Now</div>
-                            <div className="col-span-4">Premium Plan Subscription</div>
-                            <div className="col-span-3">₹4999</div>
-                            <div className="col-span-2">
-                              <span className="inline-flex items-center rounded-full bg-green-500/10 px-2 py-1 text-xs font-medium text-green-500">
-                                Paid
-                              </span>
+                        {hasSubscription ? (
+                          <div className="divide-y divide-fdgym-dark-gray">
+                            <div className="py-3 px-4 text-sm grid grid-cols-12 gap-4">
+                              <div className="col-span-3">Just Now</div>
+                              <div className="col-span-4">Premium Plan Subscription</div>
+                              <div className="col-span-3">₹4999</div>
+                              <div className="col-span-2">
+                                <span className="inline-flex items-center rounded-full bg-green-500/10 px-2 py-1 text-xs font-medium text-green-500">
+                                  Paid
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
+                        ) : (
+                          <div className="py-6 text-center text-fdgym-light-gray">
+                            <p>No payment history available</p>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>

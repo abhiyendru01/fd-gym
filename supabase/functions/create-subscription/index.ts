@@ -1,69 +1,13 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
+import { Razorpay } from "https://esm.sh/razorpay@2.9.2";
 
 // CORS headers for browser requests
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
-
-// Helper function to calculate end date based on duration
-function calculateEndDate(duration: string): Date {
-  const now = new Date();
-  
-  switch (duration) {
-    case "month":
-      now.setMonth(now.getMonth() + 1);
-      break;
-    case "3 months":
-      now.setMonth(now.getMonth() + 3);
-      break;
-    case "6 months":
-      now.setMonth(now.getMonth() + 6);
-      break;
-    case "year":
-      now.setFullYear(now.getFullYear() + 1);
-      break;
-    default:
-      now.setMonth(now.getMonth() + 1); // Default to 1 month
-  }
-  
-  return now;
-}
-
-// Razorpay order creation function
-async function createRazorpayOrder(amount: number, receipt: string) {
-  const razorpayKey = Deno.env.get("RAZORPAY_KEY_ID");
-  const razorpaySecret = Deno.env.get("RAZORPAY_KEY_SECRET");
-  
-  if (!razorpayKey || !razorpaySecret) {
-    throw new Error("Razorpay API keys are not configured");
-  }
-  
-  const auth = btoa(`${razorpayKey}:${razorpaySecret}`);
-  
-  const response = await fetch("https://api.razorpay.com/v1/orders", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Basic ${auth}`
-    },
-    body: JSON.stringify({
-      amount: amount * 100, // Razorpay expects amount in paise (1 INR = 100 paise)
-      currency: "INR",
-      receipt: receipt,
-      payment_capture: 1
-    })
-  });
-  
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(`Razorpay API error: ${JSON.stringify(errorData)}`);
-  }
-  
-  return await response.json();
-}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -74,10 +18,10 @@ serve(async (req) => {
   }
   
   try {
-    const { plan_name, amount, duration, user_id } = await req.json();
+    const { user_id, plan_name, amount, duration } = await req.json();
     
     // Validate required fields
-    if (!plan_name || !amount || !duration || !user_id) {
+    if (!user_id || !plan_name || !amount || !duration) {
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
         {
@@ -98,14 +42,43 @@ serve(async (req) => {
       }
     );
     
+    // Initialize Razorpay
+    const razorpay = new Razorpay({
+      key_id: 'rzp_test_kXdvIUTOdIictY', // Using test key
+      key_secret: 'uBUhU4SyokQFhotGToLXRg6C', // Using test secret
+    });
+    
+    // Calculate duration in days for end date
+    let durationDays = 30; // default to 30 days for "month"
+    if (duration === "3 months") {
+      durationDays = 90;
+    } else if (duration === "6 months") {
+      durationDays = 180;
+    } else if (duration === "year") {
+      durationDays = 365;
+    }
+    
+    // Calculate end date
+    const startDate = new Date();
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + durationDays);
+    
     // Create Razorpay order
-    const receipt = `sub_${user_id.substring(0, 8)}_${Date.now()}`;
-    const razorpayOrder = await createRazorpayOrder(amount, receipt);
+    const order = await razorpay.orders.create({
+      amount: amount * 100, // Razorpay amount is in paise (1/100 of INR)
+      currency: "INR",
+      receipt: `fd-gym-${user_id.slice(0, 8)}`,
+      notes: {
+        plan_name,
+        user_id,
+      },
+    });
     
-    // Calculate subscription end date
-    const end_date = calculateEndDate(duration);
+    if (!order || !order.id) {
+      throw new Error("Failed to create Razorpay order");
+    }
     
-    // Create a pending subscription in the database
+    // Create subscription record in Supabase
     const { data, error } = await supabaseAdmin
       .from("subscriptions")
       .insert({
@@ -113,26 +86,25 @@ serve(async (req) => {
         plan_name,
         amount,
         duration,
-        status: "pending", // Mark as pending until payment completes
-        razorpay_order_id: razorpayOrder.id,
-        end_date: end_date.toISOString(),
+        status: "pending", // Will be updated to "active" after payment verification
+        start_date: startDate.toISOString(),
+        end_date: endDate.toISOString(),
+        razorpay_order_id: order.id,
       })
       .select()
       .single();
     
     if (error) throw error;
     
-    // Return the created subscription along with Razorpay order details
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         subscription: data,
         razorpay: {
-          order_id: razorpayOrder.id,
-          key_id: Deno.env.get("RAZORPAY_KEY_ID"),
-          amount: razorpayOrder.amount,
-          currency: razorpayOrder.currency
-        }
+          order_id: order.id,
+          key_id: 'rzp_test_kXdvIUTOdIictY',
+          amount: amount * 100,
+        },
       }),
       {
         status: 200,
